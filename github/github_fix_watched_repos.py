@@ -88,13 +88,14 @@ repos = response.json()
 
 # Prompt the user if they want to update settings for each individual repo or update all repos at once
 update_all = input(f"{YELLOW}Do you want to update settings for each individual repo or update all repos at once? (individual/all/cancel): {RESET}").strip()
-if update_all.lower() == 'individual':
-    # Prompt the user if they want to ignore their own repositories
-    ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
-    if ignore_own_repos == 'cancel':
-        sys.exit(0)
-    ignore_own_repos = ignore_own_repos == 'y'
 
+# Prompt the user if they want to ignore their own repositories
+ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
+if ignore_own_repos == 'cancel':
+    sys.exit(0)
+ignore_own_repos = ignore_own_repos == 'y'
+
+if update_all.lower() == 'individual':
     # Loop over the repositories
     for repo in repos:
         # Get the repo's owner and name
@@ -164,10 +165,9 @@ elif update_all.lower() == 'all':
         owner = repo['owner']['login']
         repo_name = repo['name']
 
-        # Define IGNORE_OWN_REPOS outside of the if block and set it to False by default
-        IGNORE_OWN_REPOS = False
-
         # Ignore own repositories if user selected to do so
+        if ignore_own_repos and owner == username:
+            continue
         if update_all.lower() == 'individual' and owner == username:
             IGNORE_OWN_REPOS = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
             if IGNORE_OWN_REPOS == 'cancel':
