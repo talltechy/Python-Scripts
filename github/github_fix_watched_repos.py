@@ -54,6 +54,7 @@ for repo in repos:
         'ignored': False,
         'reason': 'releases'  # Only get notifications for releases
     }
+    
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
