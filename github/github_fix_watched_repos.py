@@ -14,24 +14,24 @@ log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
 logging.basicConfig(filename=log_file, level=logging.INFO)
 
 print(Fore.GREEN + "To generate a personal access token in GitHub:\n"
-    "1. Sign in to your GitHub account.\n"
-    f"2. Click on your profile photo in the upper-right corner of any page.\n"
-    f"3. Click on {Fore.YELLOW}'Settings'{Style.RESET_ALL} in the drop-down menu.\n"
-    f"4. In the left sidebar, click on {Fore.YELLOW}'Developer settings'{Style.RESET_ALL}.\n"
-    f"5. Click on {Fore.YELLOW}'Personal access tokens'{Style.RESET_ALL}.\n"
-    f"6. Click on {Fore.YELLOW}'Generate new token'{Style.RESET_ALL}.\n"
-    f"7. Give your token a descriptive name in the {Fore.YELLOW}'Note'{Style.RESET_ALL} field.\n"
-    f"8. Select the scopes, or permissions, you'd like to grant this token.\n"
-    f"   For this script, you'll need at least the {Fore.YELLOW}'repo'{Style.RESET_ALL} scope.\n"
-    f"9. Click {Fore.YELLOW}'Generate token'{Style.RESET_ALL}.\n"
-    "10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
-    "Remember to keep your tokens secret; treat them just like passwords.\n"
-    "If a token is ever compromised, you can go back to the token settings and revoke it." + 
-    Style.RESET_ALL)
+      "1. Sign in to your GitHub account.\n"
+      f"2. Click on your profile photo in the upper-right corner of any page.\n"
+      f"3. Click on {Fore.YELLOW}'Settings'{Style.RESET_ALL} in the drop-down menu.\n"
+      f"4. In the left sidebar, click on {Fore.YELLOW}'Developer settings'{Style.RESET_ALL}.\n"
+      f"5. Click on {Fore.YELLOW}'Personal access tokens'{Style.RESET_ALL}.\n"
+      f"6. Click on {Fore.YELLOW}'Generate new token'{Style.RESET_ALL}.\n"
+      f"7. Give your token a descriptive name in the {Fore.YELLOW}'Note'{Style.RESET_ALL} field.\n"
+      f"8. Select the scopes, or permissions, you'd like to grant this token.\n"
+      f"   For this script, you'll need at least the {Fore.YELLOW}'repo'{Style.RESET_ALL} scope.\n"
+      f"9. Click {Fore.YELLOW}'Generate token'{Style.RESET_ALL}.\n"
+      "10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
+      "Remember to keep your tokens secret; treat them just like passwords.\n"
+      "If a token is ever compromised, you can go back to the token settings and revoke it." +
+      Style.RESET_ALL)
 
 # Ask the user if they want to open the URL to create a personal access token in a browser
-open_url = input(Fore.YELLOW + 'Do you want to open the URL to create a personal access token in a browser? (y/n): ' + 
-                 Style.RESET_ALL)
+open_url = input(Fore.YELLOW + 'Do you want to open the URL to create a personal access token in a browser? (y/n): '
+                 + Style.RESET_ALL).strip()
 if open_url.lower() == 'y':
     webbrowser.open('https://github.com/settings/tokens/new')
 
@@ -63,11 +63,11 @@ for repo in repos:
     # Change the subscription settings
     subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
     subscription_settings = {
-        'subscribed': input(Fore.YELLOW + 'Subscribe to notifications? (y/n): ' + 
+        'subscribed': input(Fore.YELLOW + 'Subscribe to notifications? (y/n): ' +
                             Style.RESET_ALL).lower() == 'y',
-        'ignored': input(Fore.YELLOW + 'Ignore notifications? (y/n): ' + 
+        'ignored': input(Fore.YELLOW + 'Ignore notifications? (y/n): ' +
                          Style.RESET_ALL).lower() == 'y',
-        'reason': input(Fore.YELLOW + 'Reason for notifications (e.g. releases, all, etc.): ' + 
+        'reason': input(Fore.YELLOW + 'Reason for notifications (e.g. releases, all, etc.): ' +
                         Style.RESET_ALL),
     }
 
