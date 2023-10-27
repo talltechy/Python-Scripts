@@ -1,3 +1,7 @@
+"""
+This script updates the subscription settings for all repositories that the user is watching on GitHub.
+"""
+
 import getpass
 import requests
 
@@ -9,23 +13,27 @@ import requests
 # 5. Click on `Personal access tokens`.
 # 6. Click on `Generate new token`.
 # 7. Give your token a descriptive name in the `Note` field.
-# 8. Select the scopes, or permissions, you'd like to grant this token. For this script, you'll need at least the `repo` scope.
+# 8. Select the scopes, or permissions, you'd like to grant this token.
+#    For this script, you'll need at least the `repo` scope.
 # 9. Click `Generate token`.
 # 10. After generating the token, make sure to copy it. You won't be able to see it again!
-# Remember to keep your tokens secret; treat them just like passwords. If a token is ever compromised, you can go back to the token settings and revoke it.
+# Remember to keep your tokens secret; treat them just like passwords.
+# If a token is ever compromised, you can go back to the token settings and revoke it.
 
-print("To generate a personal access token in GitHub:\n\
-1. Sign in to your GitHub account.\n\
-2. Click on your profile photo in the upper-right corner of any page.\n\
-3. Click on `Settings` in the drop-down menu.\n\
-4. In the left sidebar, click on `Developer settings`.\n\
-5. Click on `Personal access tokens`.\n\
-6. Click on `Generate new token`.\n\
-7. Give your token a descriptive name in the `Note` field.\n\
-8. Select the scopes, or permissions, you'd like to grant this token. For this script, you'll need at least the `repo` scope.\n\
-9. Click `Generate token`.\n\
-10. After generating the token, make sure to copy it. You won't be able to see it again!\n\
-Remember to keep your tokens secret; treat them just like passwords. If a token is ever compromised, you can go back to the token settings and revoke it.")
+print("To generate a personal access token in GitHub:\n"
+      "1. Sign in to your GitHub account.\n"
+      "2. Click on your profile photo in the upper-right corner of any page.\n"
+      "3. Click on `Settings` in the drop-down menu.\n"
+      "4. In the left sidebar, click on `Developer settings`.\n"
+      "5. Click on `Personal access tokens`.\n"
+      "6. Click on `Generate new token`.\n"
+      "7. Give your token a descriptive name in the `Note` field.\n"
+      "8. Select the scopes, or permissions, you'd like to grant this token.\n"
+      "   For this script, you'll need at least the `repo` scope.\n"
+      "9. Click `Generate token`.\n"
+      "10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
+      "Remember to keep your tokens secret; treat them just like passwords.\n"
+      "If a token is ever compromised, you can go back to the token settings and revoke it.")
 
 # Prompt the user for their GitHub username and personal access token
 username = input('Enter your GitHub username: ')
@@ -38,7 +46,8 @@ headers = {
 }
 
 # Get the list of repositories you're watching
-response = requests.get(f'https://api.github.com/users/{username}/subscriptions', headers=headers, timeout=10)
+response = requests.get(f'https://api.github.com/users/{username}/subscriptions',
+                        headers=headers, timeout=10)
 repos = response.json()
 
 # Loop over the repositories
@@ -54,7 +63,7 @@ for repo in repos:
         'ignored': False,
         'reason': 'releases'  # Only get notifications for releases
     }
-    
+
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
