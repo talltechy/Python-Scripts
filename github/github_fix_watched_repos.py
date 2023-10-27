@@ -6,8 +6,8 @@ import getpass
 import webbrowser
 import logging
 import os
-import requests
 import sys
+import requests
 from colorama import just_fix_windows_console
 
 # use Colorama to make Termcolor work on Windows too
@@ -15,7 +15,7 @@ just_fix_windows_console()
 
 # Set up logging
 log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
-logging.basicConfig(filename=log_file, level=logging.INFO)
+logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
 # ANSI color codes
 GREEN = '\033[32m'
