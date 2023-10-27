@@ -89,11 +89,21 @@ repos = response.json()
 # Prompt the user if they want to update settings for each individual repo or update all repos at once
 update_all = input(f"{YELLOW}Do you want to update settings for each individual repo or update all repos at once? (individual/all/cancel): {RESET}").strip()
 if update_all.lower() == 'individual':
+    # Prompt the user if they want to ignore their own repositories
+    ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
+    if ignore_own_repos == 'cancel':
+        sys.exit(0)
+    ignore_own_repos = ignore_own_repos == 'y'
+
     # Loop over the repositories
     for repo in repos:
         # Get the repo's owner and name
         owner = repo['owner']['login']
         repo_name = repo['name']
+
+        # Ignore own repositories if user selected to do so
+        if ignore_own_repos and owner == username:
+            continue
 
         # Change the subscription settings
         subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
@@ -153,6 +163,10 @@ elif update_all.lower() == 'all':
         # Get the repo's owner and name
         owner = repo['owner']['login']
         repo_name = repo['name']
+
+        # Ignore own repositories if user selected to do so
+        if ignore_own_repos and owner == username:
+            continue
 
         subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
         subscription_settings = {
