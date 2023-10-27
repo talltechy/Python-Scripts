@@ -61,13 +61,7 @@ headers = {
 }
 response = requests.get(f'https://api.github.com/users/{username}', headers=headers, timeout=10)
 if response.status_code == 200:
-    # Check if the token has the correct permissions
-    scopes = response.headers.get('X-OAuth-Scopes', '').split(', ')
-    if 'repo' in scopes:
-        print(f"{GREEN}Username and token are correct.{RESET}")
-    else:
-        print(f"{RED}The provided token does not have the 'repo' scope. Please generate a new token with the 'repo' scope.{RESET}")
-        sys.exit(0)
+    print(f"{GREEN}Username and token are correct.{RESET}")
 else:
     print(f"{RED}Invalid username or token.{RESET}")
     sys.exit(0)
@@ -88,23 +82,12 @@ repos = response.json()
 
 # Prompt the user if they want to update settings for each individual repo or update all repos at once
 update_all = input(f"{YELLOW}Do you want to update settings for each individual repo or update all repos at once? (individual/all/cancel): {RESET}").strip()
-
-# Prompt the user if they want to ignore their own repositories
-ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
-if ignore_own_repos == 'cancel':
-    sys.exit(0)
-ignore_own_repos = ignore_own_repos == 'y'
-
 if update_all.lower() == 'individual':
     # Loop over the repositories
     for repo in repos:
         # Get the repo's owner and name
         owner = repo['owner']['login']
         repo_name = repo['name']
-
-        # Ignore own repositories if user selected to do so
-        if ignore_own_repos and owner == username:
-            continue
 
         # Change the subscription settings
         subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
@@ -125,7 +108,7 @@ if update_all.lower() == 'individual':
         subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
         subscription_settings = {
             'subscribed': subscribe,
-            'ignored': ignore_own_repos and owner == username, # Use ignore_own_repos here
+            'ignored': ignore,
             'reason': reason,
         }
 
@@ -165,19 +148,10 @@ elif update_all.lower() == 'all':
         owner = repo['owner']['login']
         repo_name = repo['name']
 
-        # Ignore own repositories if user selected to do so
-        if ignore_own_repos and owner == username:
-            continue
-        if update_all.lower() == 'individual' and owner == username:
-            ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
-            if ignore_own_repos == 'cancel':
-                sys.exit(0)
-            ignore_own_repos = ignore_own_repos == 'y'
-
         subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
         subscription_settings = {
             'subscribed': subscribe,
-            'ignored': ignore_own_repos and owner == username, # Use ignore_own_repos here
+            'ignored': ignore,
             'reason': reason,
         }
 
