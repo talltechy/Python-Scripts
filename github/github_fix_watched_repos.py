@@ -99,12 +99,15 @@ for repo in repos:
 
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
+    # Log the repo name and settings
+    logging.info('Repo: %s, Settings: %s', repo_name, subscription_settings)
+
     # Check if the request was successful
     if response.status_code == 200:
         SUCCESS_MSG = f"{GREEN}Successfully updated settings for {repo_name}{RESET}"
         print(SUCCESS_MSG)
-        logging.info(SUCCESS_MSG, repo_name)
+        logging.info(SUCCESS_MSG)
     else:
         ERROR_MSG = f"{RED}Failed to update settings for {repo_name}{RESET}"
         print(ERROR_MSG)
-        logging.error(ERROR_MSG, repo_name)
+        logging.error(ERROR_MSG)
