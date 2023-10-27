@@ -7,12 +7,13 @@ import webbrowser
 import logging
 import os
 import requests
+from colorama import Fore, Style
 
 # Set up logging
 log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
 logging.basicConfig(filename=log_file, level=logging.INFO)
 
-print("To generate a personal access token in GitHub:\n"
+print(Fore.GREEN + "To generate a personal access token in GitHub:\n"
       "1. Sign in to your GitHub account.\n"
       "2. Click on your profile photo in the upper-right corner of any page.\n"
       "3. Click on `Settings` in the drop-down menu.\n"
@@ -25,16 +26,16 @@ print("To generate a personal access token in GitHub:\n"
       "9. Click `Generate token`.\n"
       "10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
       "Remember to keep your tokens secret; treat them just like passwords.\n"
-      "If a token is ever compromised, you can go back to the token settings and revoke it.")
-
-# Prompt the user for their GitHub username and personal access token
-username = input('Enter your GitHub username: ')
-token = getpass.getpass('Enter your GitHub token: ')
+      "If a token is ever compromised, you can go back to the token settings and revoke it." + Style.RESET_ALL)
 
 # Ask the user if they want to open the URL to create a personal access token in a browser
-open_url = input('Do you want to open the URL to create a personal access token in a browser? (y/n): ')
+open_url = input(Fore.YELLOW + 'Do you want to open the URL to create a personal access token in a browser? (y/n): ' + Style.RESET_ALL)
 if open_url.lower() == 'y':
     webbrowser.open('https://github.com/settings/tokens/new')
+
+# Prompt the user for their GitHub username and personal access token
+username = input(Fore.YELLOW + 'Enter your GitHub username: ' + Style.RESET_ALL)
+token = getpass.getpass(Fore.YELLOW + 'Enter your GitHub token: ' + Style.RESET_ALL)
 
 # Log input
 logging.info('Username: %s', username)
@@ -62,19 +63,19 @@ for repo in repos:
     subscription_settings = {}
 
     # Prompt the user for subscription settings
-    print(f'Subscription settings for {repo_name}:')
-    subscription_settings['subscribed'] = input('Subscribe to notifications? (y/n): ').lower() == 'y'
-    subscription_settings['ignored'] = input('Ignore notifications? (y/n): ').lower() == 'y'
-    subscription_settings['reason'] = input('Reason for notifications (e.g. releases, all, etc.): ')
+    print(Fore.CYAN + f'Subscription settings for {repo_name}:' + Style.RESET_ALL)
+    subscription_settings['subscribed'] = input(Fore.YELLOW + 'Subscribe to notifications? (y/n): ' + Style.RESET_ALL).lower() == 'y'
+    subscription_settings['ignored'] = input(Fore.YELLOW + 'Ignore notifications? (y/n): ' + Style.RESET_ALL).lower() == 'y'
+    subscription_settings['reason'] = input(Fore.YELLOW + 'Reason for notifications (e.g. releases, all, etc.): ' + Style.RESET_ALL)
 
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
     if response.status_code == 200:
-        SUCCESS_MSG = 'Successfully updated settings for %s'
+        SUCCESS_MSG = Fore.GREEN + 'Successfully updated settings for %s' + Style.RESET_ALL
         print(SUCCESS_MSG % repo_name)
         logging.info(SUCCESS_MSG, repo_name)
     else:
-        ERROR_MSG = 'Failed to update settings for %s'
+        ERROR_MSG = Fore.RED + 'Failed to update settings for %s' + Style.RESET_ALL
         print(ERROR_MSG % repo_name)
         logging.error(ERROR_MSG, repo_name)

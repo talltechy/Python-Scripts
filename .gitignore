@@ -728,3 +728,4 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/git,gpg,test,linux,macos,python,backup,windows,database,virtualenv,compressed,libreoffice,spreadsheet,compression,visualstudio,microsoftoffice,visualstudiocode,compressedarchive
+github/log.txt
