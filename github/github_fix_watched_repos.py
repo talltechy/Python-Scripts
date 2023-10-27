@@ -3,22 +3,15 @@ This script updates the subscription settings for all repositories the user is w
 """
 
 import getpass
+import webbrowser
+import logging
+import os
 import requests
 
-# To generate a personal access token in GitHub:
-# 1. Sign in to your GitHub account.
-# 2. Click on your profile photo in the upper-right corner of any page.
-# 3. Click on `Settings` in the drop-down menu.
-# 4. In the left sidebar, click on `Developer settings`.
-# 5. Click on `Personal access tokens`.
-# 6. Click on `Generate new token`.
-# 7. Give your token a descriptive name in the `Note` field.
-# 8. Select the scopes, or permissions, you'd like to grant this token.
-#    For this script, you'll need at least the `repo` scope.
-# 9. Click `Generate token`.
-# 10. After generating the token, make sure to copy it. You won't be able to see it again!
-# Remember to keep your tokens secret; treat them just like passwords.
-# If a token is ever compromised, you can go back to the token settings and revoke it.
+
+# Set up logging
+log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
+logging.basicConfig(filename=log_file, level=logging.INFO)
 
 print("To generate a personal access token in GitHub:\n"
       "1. Sign in to your GitHub account.\n"
@@ -38,6 +31,15 @@ print("To generate a personal access token in GitHub:\n"
 # Prompt the user for their GitHub username and personal access token
 username = input('Enter your GitHub username: ')
 token = getpass.getpass('Enter your GitHub token: ')
+
+# Ask the user if they want to open the URL to create a personal access token in a browser
+open_url = input('Do you want to open the URL to create a personal access token in a browser? (y/n): ')
+if open_url.lower() == 'y':
+    webbrowser.open('https://github.com/settings/tokens/new')
+
+# Log input
+logging.info('Username: %s', username)
+logging.info('Open URL: %s', open_url)
 
 # The headers for the API request
 headers = {
@@ -64,10 +66,14 @@ for repo in repos:
         'reason': 'releases'  # Only get notifications for releases
     }
 
-    response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
+    RESPONSE = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
-    if response.status_code == 200:
-        print(f'Successfully updated settings for {repo_name}')
+    if RESPONSE.status_code == 200:
+        SUCCESS_MSG = 'Successfully updated settings for %s'
+        print(SUCCESS_MSG % repo_name)
+        logging.info(SUCCESS_MSG, repo_name)
     else:
-        print(f'Failed to update settings for {repo_name}')
+        ERROR_MSG = 'Failed to update settings for %s'
+        print(ERROR_MSG % repo_name)
+        logging.error(ERROR_MSG, repo_name)
