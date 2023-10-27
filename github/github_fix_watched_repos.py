@@ -62,16 +62,14 @@ for repo in repos:
 
     # Change the subscription settings
     subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
-    subscription_settings = {}
-
-    # Prompt the user for subscription settings
-    print(Fore.CYAN + f'Subscription settings for {repo_name}:' + Style.RESET_ALL)
-    subscription_settings['subscribed'] = input(Fore.YELLOW + 'Subscribe to notifications? (y/n): ' + 
-                                                 Style.RESET_ALL).lower() == 'y'
-    subscription_settings['ignored'] = input(Fore.YELLOW + 'Ignore notifications? (y/n): ' + 
-                                              Style.RESET_ALL).lower() == 'y'
-    subscription_settings['reason'] = input(Fore.YELLOW + 'Reason for notifications (e.g. releases, all, etc.): ' + 
-                                             Style.RESET_ALL)
+    subscription_settings = {
+        'subscribed': input(Fore.YELLOW + 'Subscribe to notifications? (y/n): ' + 
+                            Style.RESET_ALL).lower() == 'y',
+        'ignored': input(Fore.YELLOW + 'Ignore notifications? (y/n): ' + 
+                         Style.RESET_ALL).lower() == 'y',
+        'reason': input(Fore.YELLOW + 'Reason for notifications (e.g. releases, all, etc.): ' + 
+                        Style.RESET_ALL),
+    }
 
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
