@@ -1,7 +1,7 @@
 import logging
 import logging.handlers
 import os
-from logger import setup_logging
+from old.logger import setup_logging
 from file_validation import is_valid_directory, is_valid_extension, get_files
 
 log_file_path = 'file_renamer.log'
