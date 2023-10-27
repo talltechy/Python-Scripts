@@ -8,7 +8,6 @@ import logging
 import os
 import requests
 
-
 # Set up logging
 log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
 logging.basicConfig(filename=log_file, level=logging.INFO)
@@ -50,7 +49,7 @@ headers = {
 # Get the list of repositories you're watching
 response = requests.get(f'https://api.github.com/users/{username}/subscriptions',
                         headers=headers, timeout=10)
-repos = response.json()
+repos = response.json()['items']
 
 # Loop over the repositories
 for repo in repos:
@@ -68,10 +67,10 @@ for repo in repos:
     subscription_settings['ignored'] = input('Ignore notifications? (y/n): ').lower() == 'y'
     subscription_settings['reason'] = input('Reason for notifications (e.g. releases, all, etc.): ')
 
-    RESPONSE = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
+    response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
-    if RESPONSE.status_code == 200:
+    if response.status_code == 200:
         SUCCESS_MSG = 'Successfully updated settings for %s'
         print(SUCCESS_MSG % repo_name)
         logging.info(SUCCESS_MSG, repo_name)
