@@ -7,6 +7,7 @@ import webbrowser
 import logging
 import os
 import requests
+import sys
 from colorama import just_fix_windows_console
 
 # use Colorama to make Termcolor work on Windows too
@@ -43,18 +44,17 @@ open_url = input(f"{YELLOW}Do you want to open the URL to create a personal acce
 if open_url.lower() == 'y':
     webbrowser.open('https://github.com/settings/tokens/new')
 elif open_url.lower() == 'cancel':
-    exit()
+    sys.exit(0)
 
 # Prompt the user for their GitHub username and personal access token
 username = input(f"{YELLOW}Enter your GitHub username (cancel to exit): {RESET}")
 if username.lower() == 'cancel':
-    exit()
+    sys.exit(0)
 token = getpass.getpass(f"{YELLOW}Enter your GitHub token (cancel to exit): {RESET}")
 if token.lower() == 'cancel':
-    exit()
+    sys.exit(0)
 
 # Log input
-logging.info('Username: %s', username)
 logging.info('Open URL: %s', open_url)
 
 # The headers for the API request
@@ -77,12 +77,12 @@ for repo in repos:
     # Change the subscription settings
     subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
     if subscribe_input == 'cancel':
-        exit()
+        sys.exit(0)
     subscribe = subscribe_input == 'y'
 
     ignore_input = input(f"{YELLOW}Ignore notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
     if ignore_input == 'cancel':
-        exit()
+        sys.exit(0)
     ignore = ignore_input == 'y'
 
     reason_input = input(f"{YELLOW}Reason for notifications for {repo_name} (e.g. releases, all, etc.) (cancel to skip): {RESET}")
