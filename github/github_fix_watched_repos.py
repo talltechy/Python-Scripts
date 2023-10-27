@@ -61,7 +61,13 @@ headers = {
 }
 response = requests.get(f'https://api.github.com/users/{username}', headers=headers, timeout=10)
 if response.status_code == 200:
-    print(f"{GREEN}Username and token are correct.{RESET}")
+    # Check if the token has the correct permissions
+    scopes = response.headers.get('X-OAuth-Scopes', '').split(', ')
+    if 'repo' in scopes:
+        print(f"{GREEN}Username and token are correct.{RESET}")
+    else:
+        print(f"{RED}The provided token does not have the 'repo' scope. Please generate a new token with the 'repo' scope.{RESET}")
+        sys.exit(0)
 else:
     print(f"{RED}Invalid username or token.{RESET}")
     sys.exit(0)
