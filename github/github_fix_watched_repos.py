@@ -1,5 +1,5 @@
 """
-This script updates the subscription settings for all repositories that the user is watching on GitHub.
+This script updates the subscription settings for all repositories the user is watching on GitHub.
 """
 
 import getpass
