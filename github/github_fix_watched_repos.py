@@ -169,10 +169,10 @@ elif update_all.lower() == 'all':
         if ignore_own_repos and owner == username:
             continue
         if update_all.lower() == 'individual' and owner == username:
-            IGNORE_OWN_REPOS = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
-            if IGNORE_OWN_REPOS == 'cancel':
+            ignore_own_repos = input(f"{YELLOW}Do you want to ignore your own repositories? (y/n/cancel): {RESET}").lower()
+            if ignore_own_repos == 'cancel':
                 sys.exit(0)
-            IGNORE_OWN_REPOS = IGNORE_OWN_REPOS == 'y'
+            ignore_own_repos = ignore_own_repos == 'y'
 
         subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
         subscription_settings = {
