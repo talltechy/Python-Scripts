@@ -125,7 +125,7 @@ if update_all.lower() == 'individual':
         subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
         subscription_settings = {
             'subscribed': subscribe,
-            'ignored': ignore,
+            'ignored': ignore_own_repos and owner == username, # Use ignore_own_repos here
             'reason': reason,
         }
 
