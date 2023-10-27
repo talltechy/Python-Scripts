@@ -38,7 +38,7 @@ headers = {
 }
 
 # Get the list of repositories you're watching
-response = requests.get(f'https://api.github.com/users/{username}/subscriptions', headers=headers)
+response = requests.get(f'https://api.github.com/users/{username}/subscriptions', headers=headers, timeout=10)
 repos = response.json()
 
 # Loop over the repositories
@@ -54,7 +54,7 @@ for repo in repos:
         'ignored': False,
         'reason': 'releases'  # Only get notifications for releases
     }
-    response = requests.put(subscription_url, headers=headers, json=subscription_settings)
+    response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
     # Check if the request was successful
     if response.status_code == 200:
