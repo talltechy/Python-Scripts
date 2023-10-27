@@ -23,30 +23,35 @@ RED = '\033[31m'
 RESET = '\033[0m'
 
 print(f"{GREEN}To generate a personal access token in GitHub:\n"
-      "1. Sign in to your GitHub account.\n"
-      f"2. Click on your profile photo in the upper-right corner of any page.\n"
-      f"3. Click on {YELLOW}'Settings'{RESET} in the drop-down menu.\n"
-      f"4. In the left sidebar, click on {YELLOW}'Developer settings'{RESET}.\n"
-      f"5. Click on {YELLOW}'Personal access tokens'{RESET}.\n"
-      f"6. Click on {YELLOW}'Generate new token'{RESET}.\n"
-      f"7. Give your token a descriptive name in the {YELLOW}'Note'{RESET} field.\n"
-      f"8. Select the scopes, or permissions, you'd like to grant this token.\n"
-      f"   For this script, you'll need at least the {YELLOW}'repo'{RESET} scope.\n"
-      f"9. Click {YELLOW}'Generate token'{RESET}.\n"
-      "10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
-      "Remember to keep your tokens secret; treat them just like passwords.\n"
-      "If a token is ever compromised, you can go back to the token settings and revoke it." +
-      RESET)
+    f"{GREEN}1. Sign in to your GitHub account.\n"
+    f"{GREEN}2. Click on your profile photo in the upper-right corner of any page.\n"
+    f"{GREEN}3. Click on {YELLOW}'Settings'{GREEN} in the drop-down menu.\n"
+    f"{GREEN}4. In the left sidebar, click on {YELLOW}'Developer settings'{GREEN}.\n"
+    f"{GREEN}5. Click on {YELLOW}'Personal access tokens'{GREEN}.\n"
+    f"{GREEN}6. Click on {YELLOW}'Generate new token'{GREEN}.\n"
+    f"{GREEN}7. Give your token a descriptive name in the {YELLOW}'Note'{GREEN} field.\n"
+    f"{GREEN}8. Select the scopes, or permissions, you'd like to grant this token.\n"
+    f"{GREEN}   For this script, you'll need at least the {YELLOW}'repo'{GREEN} scope.\n"
+    f"{GREEN}9. Click {YELLOW}'Generate token'{GREEN}.\n"
+    f"{GREEN}10. After generating the token, make sure to copy it. You won't be able to see it again!\n"
+    f"{GREEN}Remember to keep your tokens secret; treat them just like passwords.\n"
+    f"{GREEN}If a token is ever compromised, you can go back to the token settings and revoke it.{RESET}")
 
 # Ask the user if they want to open the URL to create a personal access token in a browser
-open_url = input(f"{YELLOW}Do you want to open the URL to create a personal access token in a browser? (y/n): "
+open_url = input(f"{YELLOW}Do you want to open the URL to create a personal access token in a browser? (y/n/cancel): "
                  f"{RESET}").strip()
 if open_url.lower() == 'y':
     webbrowser.open('https://github.com/settings/tokens/new')
+elif open_url.lower() == 'cancel':
+    exit()
 
 # Prompt the user for their GitHub username and personal access token
-username = input(f"{YELLOW}Enter your GitHub username: {RESET}")
-token = getpass.getpass(f"{YELLOW}Enter your GitHub token: {RESET}")
+username = input(f"{YELLOW}Enter your GitHub username (cancel to exit): {RESET}")
+if username.lower() == 'cancel':
+    exit()
+token = getpass.getpass(f"{YELLOW}Enter your GitHub token (cancel to exit): {RESET}")
+if token.lower() == 'cancel':
+    exit()
 
 # Log input
 logging.info('Username: %s', username)
@@ -70,11 +75,26 @@ for repo in repos:
     repo_name = repo['name']
 
     # Change the subscription settings
+    subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+    if subscribe_input == 'cancel':
+        exit()
+    subscribe = subscribe_input == 'y'
+
+    ignore_input = input(f"{YELLOW}Ignore notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+    if ignore_input == 'cancel':
+        exit()
+    ignore = ignore_input == 'y'
+
+    reason_input = input(f"{YELLOW}Reason for notifications for {repo_name} (e.g. releases, all, etc.) (cancel to skip): {RESET}")
+    if reason_input.lower() == 'cancel':
+        continue
+    reason = reason_input
+
     subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
     subscription_settings = {
-        'subscribed': input(f"{YELLOW}Subscribe to notifications? (y/n): {RESET}").lower() == 'y',
-        'ignored': input(f"{YELLOW}Ignore notifications? (y/n): {RESET}").lower() == 'y',
-        'reason': input(f"{YELLOW}Reason for notifications (e.g. releases, all, etc.): {RESET}"),
+        'subscribed': subscribe,
+        'ignored': ignore,
+        'reason': reason,
     }
 
     response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
