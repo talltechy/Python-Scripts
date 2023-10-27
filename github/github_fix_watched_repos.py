@@ -54,6 +54,18 @@ token = getpass.getpass(f"{YELLOW}Enter your GitHub token (cancel to exit): {RES
 if token.lower() == 'cancel':
     sys.exit(0)
 
+# Check if the username and token are correct
+headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': f'token {token}',
+}
+response = requests.get(f'https://api.github.com/users/{username}', headers=headers, timeout=10)
+if response.status_code == 200:
+    print(f"{GREEN}Username and token are correct.{RESET}")
+else:
+    print(f"{RED}Invalid username or token.{RESET}")
+    sys.exit(0)
+
 # Log input
 logging.info('Open URL: %s', open_url)
 
@@ -68,46 +80,97 @@ response = requests.get(f'https://api.github.com/users/{username}/subscriptions'
                         headers=headers, timeout=10)
 repos = response.json()
 
-# Loop over the repositories
-for repo in repos:
-    # Get the repo's owner and name
-    owner = repo['owner']['login']
-    repo_name = repo['name']
+# Prompt the user if they want to update settings for each individual repo or update all repos at once
+update_all = input(f"{YELLOW}Do you want to update settings for each individual repo or update all repos at once? (individual/all/cancel): {RESET}").strip()
+if update_all.lower() == 'individual':
+    # Loop over the repositories
+    for repo in repos:
+        # Get the repo's owner and name
+        owner = repo['owner']['login']
+        repo_name = repo['name']
 
-    # Change the subscription settings
-    subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+        # Change the subscription settings
+        subscribe_input = input(f"{YELLOW}Subscribe to notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+        if subscribe_input == 'cancel':
+            sys.exit(0)
+        subscribe = subscribe_input == 'y'
+
+        ignore_input = input(f"{YELLOW}Ignore notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+        if ignore_input == 'cancel':
+            sys.exit(0)
+        ignore = ignore_input == 'y'
+
+        reason_input = input(f"{YELLOW}Reason for notifications for {repo_name} (e.g. releases, all, etc.) (cancel to skip): {RESET}")
+        if reason_input.lower() == 'cancel':
+            continue
+        reason = reason_input
+
+        subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
+        subscription_settings = {
+            'subscribed': subscribe,
+            'ignored': ignore,
+            'reason': reason,
+        }
+
+        response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
+
+        # Log the repo name and settings
+        logging.info('Repo: %s, Settings: %s', repo_name, subscription_settings)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            SUCCESS_MSG = f"{GREEN}Successfully updated settings for {repo_name}{RESET}"
+            print(SUCCESS_MSG)
+            logging.info(SUCCESS_MSG)
+        else:
+            ERROR_MSG = f"{RED}Failed to update settings for {repo_name}{RESET}"
+            print(ERROR_MSG)
+            logging.error(ERROR_MSG)
+elif update_all.lower() == 'all':
+    # Change the subscription settings for all repos at once
+    subscribe_input = input(f"{YELLOW}Subscribe to notifications for all repos? (y/n/cancel): {RESET}").lower()
     if subscribe_input == 'cancel':
         sys.exit(0)
     subscribe = subscribe_input == 'y'
 
-    ignore_input = input(f"{YELLOW}Ignore notifications for {repo_name}? (y/n/cancel): {RESET}").lower()
+    ignore_input = input(f"{YELLOW}Ignore notifications for all repos? (y/n/cancel): {RESET}").lower()
     if ignore_input == 'cancel':
         sys.exit(0)
     ignore = ignore_input == 'y'
 
-    reason_input = input(f"{YELLOW}Reason for notifications for {repo_name} (e.g. releases, all, etc.) (cancel to skip): {RESET}")
+    reason_input = input(f"{YELLOW}Reason for notifications for all repos (e.g. releases, all, etc.) (cancel to skip): {RESET}")
     if reason_input.lower() == 'cancel':
-        continue
+        sys.exit(0)
     reason = reason_input
 
-    subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
-    subscription_settings = {
-        'subscribed': subscribe,
-        'ignored': ignore,
-        'reason': reason,
-    }
+    for repo in repos:
+        # Get the repo's owner and name
+        owner = repo['owner']['login']
+        repo_name = repo['name']
 
-    response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
+        subscription_url = f'https://api.github.com/repos/{owner}/{repo_name}/subscription'
+        subscription_settings = {
+            'subscribed': subscribe,
+            'ignored': ignore,
+            'reason': reason,
+        }
 
-    # Log the repo name and settings
-    logging.info('Repo: %s, Settings: %s', repo_name, subscription_settings)
+        response = requests.put(subscription_url, headers=headers, json=subscription_settings, timeout=10)
 
-    # Check if the request was successful
-    if response.status_code == 200:
-        SUCCESS_MSG = f"{GREEN}Successfully updated settings for {repo_name}{RESET}"
-        print(SUCCESS_MSG)
-        logging.info(SUCCESS_MSG)
-    else:
-        ERROR_MSG = f"{RED}Failed to update settings for {repo_name}{RESET}"
-        print(ERROR_MSG)
-        logging.error(ERROR_MSG)
+        # Log the repo name and settings
+        logging.info('Repo: %s, Settings: %s', repo_name, subscription_settings)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            SUCCESS_MSG = f"{GREEN}Successfully updated settings for {repo_name}{RESET}"
+            print(SUCCESS_MSG)
+            logging.info(SUCCESS_MSG)
+        else:
+            ERROR_MSG = f"{RED}Failed to update settings for {repo_name}{RESET}"
+            print(ERROR_MSG)
+            logging.error(ERROR_MSG)
+elif update_all.lower() == 'cancel':
+    sys.exit(0)
+else:
+    print(f"{RED}Invalid input. Please enter 'individual' or 'all'.{RESET}")
+    sys.exit(0)
